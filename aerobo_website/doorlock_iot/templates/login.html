@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Karla:wght@200;300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6 col-md-7 intro-section">
+          <div class="brand-wrapper">
+            <img src="{% static 'images/logo.png' %}" alt="logo" width="200" height="50" /> 
+          </div>
+          <div class="intro-content-wrapper">
+            <h1 class="intro-title">Welcome Aviators !</h1>
+            <p class="intro-text">
+              "The sky is not a limit, but the beginning of unlimited exploration. Together, we're flying not just robots, but dreams and innovations across the horizon!”
+            </p>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-5 form-section" style="background-color: #2c2c2c;">
+          <div class="login-wrapper loginBox">
+            <div class="dots-wrapper">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <h2 class="login-title">Login <b style="color: aqua;"> ADMIN</b></h2>
+            <hr style="width:50%; text-align:left; margin-left:0; margin-top: -10px;">
+            <form method="post" action="{% url 'login' %}">
+              <div class="form-group">
+                {% csrf_token %}
+                <label for="uname" class="sr-only">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  id="uname"
+                  class="form-control"
+                  placeholder="Username"
+                  required
+                />
+              </div>
+              <div class="form-group mb-3">
+                <label for="pass" class="sr-only">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  id="pass"
+                  class="form-control"
+                  placeholder="Password"
+                />
+              </div>
+              <div
+                class="d-flex justify-content-between align-items-center mb-5"
+              >
+                <input
+                  name="login"
+                  id="login"
+                  class="btn login-btn"
+                  type="submit"
+                  value="Login"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

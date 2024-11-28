@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Barang</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top" style="margin-left: 10px;"> 
+            </a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-5">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row table-wrapper-fix">
+                        <div class="col-sm-6">
+                            <h2>Manage Data <b>Inventaris AEROBO</b></h2>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="#addBarangModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Data Barang</span></a>			
+                            <a href="{% url 'dashboard' %}" class="btn btn-danger"><i class="material-icons"></i> <span>Dashboard Anggota</span></a>			
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <tr>
+                                <th>No Identitas</th>
+                                <th>Nama Barang</th>
+                                <th>Jumlah</th>
+                                <th>Screenshoot Barang</th>
+                                <th>Status Kelayakan</th>
+                                <th>Divisi</th>
+                                <th>Action</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% if barangs %}
+                            {% for barang in barangs %}
+                            <tr>
+                                <td>{{ barang.no_identitas }}</td>
+                                <td>{{ barang.nama_barang }}</td>
+                                <td>{{ barang.jumlah }}</td>
+                                <td>
+                                    {% if barang.screenshot_barang %}
+                                        <img src="{{ barang.screenshot_barang.url }}" alt="Screenshoot Barang" width="50">
+                                    {% else %}
+                                        Tidak ada Gambar
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ barang.status_kelayakan }}
+                                </td>
+                                <td>
+                                    {{ barang.divisi }}
+                                </td>                                                                
+                                <td>
+                                    <a href="#editBarangModal" class="edit btn-edit" data-toggle="modal" 
+                                            data-no_identitas="{{ barang.no_identitas }}"
+                                            data-jumlah="{{ barang.jumlah }}"
+                                            data-nama_barang="{{ barang.nama_barang }}"
+                                            data-divisi="{{ barang.divisi }}"
+                                            data-screenshot_barang="{{ barang.screenshot_barang }}"
+                                            data-status_kelayakan="{{ barang.status_kelayakan }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                            <a href="#deleteBarangModal" class="delete" data-toggle="modal" data-no_identitas="{{ barang.no_identitas }}">
+                                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                            </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="12" style="text-align:center;">Tidak ada data barang</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+    </div>
+
+    <!-- Adding data Modal HTML -->
+    <div id="addBarangModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Menambahkan Data Barang Baru</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">		
+                        <div class="form-group">
+                            <label for="id_nama_barang">Nama Barang</label>
+                            <input type="text" class="form-control" id="id_nama_barang" name="nama_barang" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_jumlah">Jumlah</label>
+                            <input type="number" class="form-control" id="id_jumlah" name="jumlah" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_screenshot_barang">Screenshot Barang</label>
+                            <input type="file" class="form-control" id="id_screenshot_barang" name="screenshot_barang">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_status_kelayakan">Status Kelayakan</label>
+                            <select class="form-control" id="id_status_kelayakan" name="status_kelayakan" required>
+                                <option value="Rusak">Rusak</option>
+                                <option value="Normal">Normal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_divisi">Divisi</label>
+                            <select class="form-control" id="id_divisi" name="divisi" required>
+                                <option value="RP">Racing Plane</option>
+                                <option value="VTOL">VTOL</option>
+                                <option value="TD">Technologi Development</option>
+                            </select>
+                        </div>
+                    </div>				
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Add">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editBarangModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'edit_barang' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Edit Data</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="no_identitas">
+                        <div class="form-group">
+                            <label for="id_nama_barang">Nama Barang</label>
+                            <input type="text" class="form-control" id="id_nama_barang" name="nama_barang" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_jumlah">Jumlah</label>
+                            <input type="number" class="form-control" id="id_jumlah" name="jumlah" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_screenshot_barang">Screenshot Barang</label>
+                            <input type="file" class="form-control" id="id_screenshot_barang" name="screenshot_barang">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_status_kelayakan">Status Kelayakan</label>
+                            <select class="form-control" id="id_status_kelayakan" name="status_kelayakan" required>
+                                <option value="Rusak">Rusak</option>
+                                <option value="Normal">Normal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_divisi">Divisi</label>
+                            <select class="form-control" id="id_divisi" name="divisi" required>
+                                <option value="RP">Racing Plane</option>
+                                <option value="VTOL">VTOL</option>
+                                <option value="TD">Technologi Development</option>
+                            </select>
+                        </div>
+                    </div>				
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Save">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+<!-- Delete Modal HTML -->
+<div id="deleteBarangModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'delete_barang' %}">
+                {% csrf_token %}
+                <input type="hidden" name="no_identitas" id="delete_no_identitas">
+                <div class="modal-header">						
+                    <h4 class="modal-title">Delete Data</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">					
+                    <p>Apakah Anda yakin ingin menghapus Record Data ini?</p>
+                    <p class="text-warning"><small>Tindakan ini tidak dapat dibatalkan.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+// Javascript function untuk menghapus data mahasiswa
+$(document).ready(function(){
+    // Pass NIM to delete modal
+    $('.delete').click(function(){
+        var no_identitas = $(this).data('no_identitas');
+        $('#delete_no_identitas').val(no_identitas);
+    });
+});
+
+// javascript function untuk mengedit data mahasiswa
+$('#editBarangModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+
+    // Extract data attributes
+    var no_identitas = button.data('no_identitas');
+    var nama_barang = button.data('nama_barang');
+    var jumlah = button.data('jumlah');
+    var screenshot_barang = button.data('screenshot_barang');
+    var status_kelayakan = button.data('status_kelayakan');
+    var divisi = button.data('divisi');
+
+    var modal = $(this);
+
+    // Set values in modal
+    modal.find('input[name="no_identitas"]').val(no_identitas);
+    modal.find('input[name="nama_barang"]').val(nama_barang);
+    modal.find('input[name="jumlah"]').val(jumlah);
+    modal.find('input[name="status_kelayakan"]').val(status_kelayakan);
+    modal.find('input[name="divisi"]').val(divisi);
+    
+    // Display current profile picture if available
+    if (screenshot_barang) {
+        modal.find('.profile-picture-preview').html('<img src="' + screenshot_barang + '" width="70" height="70">');
+    } else {
+        modal.find('.profile-picture-preview').html('No profile picture');
+    }
+
+    $('.modal-title').html('Edit Data Barang <b style="color: aqua;">' + nama_barang + '</b>');
+});
+</script>
+</html>

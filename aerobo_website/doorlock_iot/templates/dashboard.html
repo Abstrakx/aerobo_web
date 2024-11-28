@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Management Account</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top" style="margin-left: 10px;"> 
+            </a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-5">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row table-wrapper-fix">
+                        <div class="col-sm-6">
+                            <h2>Manage Data <b>Anggota AEROBO</b></h2>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="#addAnggotaModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Data Anggota</span></a>			
+                            <a href="{% url 'dashboard_barang_admin' %}" class="btn btn-danger"><i class="material-icons"></i> <span>Dashboard Barang</span></a>
+                            <a href="{% url 'peminjaman_list' %}" class="btn btn-dark"><i class="material-icons"></i> <span>Dashboard Peminjaman</span></a>			
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Divisi</th>
+                                <th>QR-Code Anggota</th>
+                                <th>Profile</th>
+                                <th>Last In</th>
+                                <th>Screenshoot</th>
+                                <th>Action</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% if mahasiswas %}
+                            {% for mahasiswa in mahasiswas %}
+                            <tr>
+                                <td>{{ mahasiswa.nim }}</td>
+                                <td>{{ mahasiswa.nama }}</td>
+                                <td>{{ mahasiswa.username }}</td>
+                                <td>{{ mahasiswa.divisi }}</td>
+                                <td>
+                                    {% if mahasiswa.qr_code_aerobo %}
+                                        <img src="{{ mahasiswa.qr_code_aerobo.url }}" alt="QR-Code Mahasiswa" width="50">
+                                    {% else %}
+                                        Tidak ada QR-Code
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if mahasiswa.profile_picture %}
+                                        <img src="{{ mahasiswa.profile_picture.url }}" alt="Profile Picture" width="100" height="100">
+                                    {% else %}
+                                        <p>No profile picture available</p>
+                                    {% endif %}                                
+                                </td>
+                                <td>
+                                    {% if mahasiswa.last_out %}
+                                        {% with last_out_item=mahasiswa.last_out|last %}
+                                            {% if last_out_item %}
+                                                <div>
+                                                    {% if last_out_item.datetime %}
+                                                        {{ last_out_item.datetime }}
+                                                    {% else %}
+                                                        No datetime available
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                No valid data in last_out
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>                                                        
+                                <td>
+                                    <a href="" class="btn btn-info text-light">View Details</a>
+                                </td>           
+                                <td>
+                                    <a href="#editAnggotaModal" class="edit btn-edit" data-toggle="modal" data-nim="{{ mahasiswa.nim }}"
+                                            data-id="{{ mahasiswa.id }}"
+                                            data-nama="{{ mahasiswa.nama }}"
+                                            data-divisi="{{ mahasiswa.divisi }}"
+                                            data-profile_picture="{% if mahasiswa.profile_picture %}{{ mahasiswa.profile_picture.url }}{% else %}''{% endif %}"
+                                            data-username="{{ mahasiswa.username }}"
+                                            data-password="{{ mahasiswa.password }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                    <a href="#deleteAnggotaModal" class="delete" data-toggle="modal" data-nim="{{ mahasiswa.nim }}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="12" style="text-align:center;">Tidak ada data mahasiswa</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+    </div>
+
+    <!-- Adding data Modal HTML -->
+    <div id="addAnggotaModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Menambahkan Data Anggota Baru</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id">
+                        <div class="form-group">
+                            <label for="id_nama">Nama</label>
+                            <input type="text" class="form-control" id="id_nama" name="nama" required>
+                        </div>					
+                        <div class="form-group">
+                            <label for="id_nim">NIM</label>
+                            <input type="text" class="form-control" id="id_nim" name="nim" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_divisi">Divisi</label>
+                            <input type="text" class="form-control" id="id_divisi" name="divisi" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_profile_picture">Profile Picture</label>
+                            <input type="file" class="form-control" id="id_profile_picture" name="profile_picture">
+                        </div>
+                        <div class="form-group">
+                            <label for="id_username">Username</label>
+                            <input type="text" class="form-control" id="id_username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_password">Password</label>
+                            <input type="text" class="form-control" id="id_password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_confirm_password">Konfirmasi Password</label>
+                            <input type="password" class="form-control" id="id_confirm_password" name="confirm_password" required>
+                        </div>
+                    </div>				
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Add">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal HTML -->
+    <div id="editAnggotaModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'edit_member' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Edit Data</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id">
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <input type="text" class="form-control" name="nama" value="{{ nama }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>NIM</label>
+                            <input type="text" class="form-control" name="nim" value="{{ nim }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Divisi</label>
+                            <input type="text" class="form-control" name="divisi" value="{{ divisi }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username" value="{{ username }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Picture</label>
+                            <input type="file" class="form-control" name="profile_picture">
+                            <div class="profile-picture-preview">
+                                {% if profile_picture %}
+                                    <img src="{{ profile_picture }}" width="100" height="100">
+                                {% else %}
+                                    No profile picture
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="text" class="form-control" name="password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-info" value="Save">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Modal HTML -->
+    <div id="deleteAnggotaModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'delete_member' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="nim" id="delete_nim">
+                    <div class="modal-header">						
+                        <h4 class="modal-title">Delete Data</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">					
+                        <p>Apakah Anda yakin ingin menghapus Record Data ini?</p>
+                        <p class="text-warning"><small>Tindakan ini tidak dapat dibatalkan.</small></p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+// Javascript function untuk menghapus data mahasiswa
+$(document).ready(function(){
+    // Pass NIM to delete modal
+    $('.delete').click(function(){
+        var nim = $(this).data('nim');
+        $('#delete_nim').val(nim);
+    });
+});
+
+// javascript function untuk mengedit data mahasiswa
+$('#editAnggotaModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+
+    // Extract data attributes
+    var id = button.data('id');
+    var nim = button.data('nim');
+    var nama = button.data('nama');
+    var divisi = button.data('divisi');
+    var profile_picture = button.data('profile_picture');
+    var username = button.data('username');
+    var password = button.data('password');
+
+    var modal = $(this);
+
+    // Set values in modal
+    modal.find('input[name="id"]').val(id);
+    modal.find('input[name="nim"]').val(nim);
+    modal.find('input[name="nama"]').val(nama);
+    modal.find('input[name="divisi"]').val(divisi);
+    modal.find('input[name="username"]').val(username);
+
+    // Display current profile picture if available
+    if (profile_picture) {
+        modal.find('.profile-picture-preview').html('<img src="' + profile_picture + '" width="70" height="70">');
+    } else {
+        modal.find('.profile-picture-preview').html('No profile picture');
+    }
+
+    $('.modal-title').html('Edit Data <b style="color: aqua;">' + nama + '</b>');
+});
+</script>
+</html>

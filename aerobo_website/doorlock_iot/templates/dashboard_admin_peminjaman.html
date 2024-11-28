@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Barang</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" width="200" height="50"
+                    class="d-inline-block align-text-top" style="margin-left: 10px;"> 
+            </a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-5">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row table-wrapper-fix">
+                        <div class="col-sm-6">
+                            <h2>Manage Data <b>Peminjaman Barang</b></h2>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="{% url 'dashboard' %}" class="btn btn-success"><i class="material-icons"></i> <span>Dashboard Anggota</span></a>
+                            <a href="{% url 'dashboard_barang_admin' %}" class="btn btn-danger"><i class="material-icons"></i> <span>Dashboard Barang</span></a>			
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <tr>
+                                <th>Jumlah Peminjaman</th>
+                                <th>Nama Peminjam</th>
+                                <th>Nama Barang</th>
+                                <th>Tanggal Peminjaman</th>
+                                <th>Tanggal Pengembalian</th>
+                                <th>Status</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {% if peminjamans %}
+                            {% for peminjaman in peminjamans %}
+                            <tr>
+                                <td>{{ peminjaman.jumlah_pinjam }}</td>
+                                <td>{{ peminjaman.aerobo_member.nama }}</td>
+                                <td>{{ peminjaman.barang.nama_barang }}</td>
+                                {% if peminjaman.tanggal_pinjam %}
+                                    <td>{{ peminjaman.tanggal_pinjam }}</td>
+                                {% else %}
+                                    <td>Tidak Ada Tanggal Peminjaman</td>
+                                {% endif %}
+
+                                {% if peminjaman.tanggal_kembali %}
+                                    <td>{{ peminjaman.tanggal_kembali }}</td>
+                                {% else %}
+                                    <td>Tidak Ada Tanggal Pengembalian</td>
+                                {% endif %}
+
+                                <td>
+                                    {{ peminjaman.status }}
+                                    {% if peminjaman.status == 'Diajukan' %}
+                                    <a href="{% url 'update_status' peminjaman.pk 'Diterima' %}">Setujui</a>
+                                    {% elif peminjaman.status == 'Diterima' %}
+                                    <a href="{% url 'update_status' peminjaman.pk 'Dikembalikan' %}">Kembalikan</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="12" style="text-align:center;">Tidak ada data peminjaman</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+    </div>
+
+</body>
+
+</html>
