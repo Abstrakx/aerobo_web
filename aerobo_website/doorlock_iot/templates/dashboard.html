@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- Section A: Head Section -->
     <meta charset="utf-8">
@@ -25,7 +24,6 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
-
 <body>
 
     <!-- Section B: Navigation Bar -->
@@ -56,10 +54,9 @@
     <hr class="my-0">
 
     <!-- Section C: Dashboard Content -->
-    <div class="container-fluid" style="margin-top: -30px;">
+    <div class="container-fluid" style="margin-top: -20px;">
         <div class="table-responsive">
             <div class="table-wrapper">
-                <!-- Section C.1: Table Title and Action Buttons -->
                 <div class="table-title">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2>Manage Data <b>Anggota AEROBO</b></h2>
@@ -72,25 +69,24 @@
                             </a>
                             <a href="#addAnggotaModal" class="btn btn-success" data-toggle="modal">
                                 <i class="material-icons">&#xE147;</i> <span>Add Data Anggota</span>
-                            </a>
+                            </a>		
                         </div>
                     </div>
                 </div>
-
-                <!-- Section C.2: Table for Data Anggota -->
                 <table class="table table-striped table-hover table-bordered">
                     <thead>
                         <tr>
-                            <th>NIM</th>
-                            <th>Nama</th>
-                            <th>Username</th>
-                            <th>Divisi</th>
-                            <th>QR-Code Anggota</th>
-                            <th>Profile</th>
-                            <th>Last In</th>
-                            <th>Screenshot</th>
-                            <th>Action</th>
-                        </tr>
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Divisi</th>
+                                <th>QR-Code Anggota</th>
+                                <th>Profile</th>
+                                <th>Last In</th>
+                                <th>Screenshoot</th>
+                                <th>Action</th>
+                            </tr>
                     </thead>
                     <tbody>
                         {% if mahasiswas %}
@@ -112,7 +108,7 @@
                                         <img src="{{ mahasiswa.profile_picture.url }}" alt="Profile Picture" width="100" height="100">
                                     {% else %}
                                         <p>No profile picture available</p>
-                                    {% endif %}
+                                    {% endif %}                                
                                 </td>
                                 <td>
                                     {% if mahasiswa.last_out %}
@@ -132,23 +128,19 @@
                                     {% else %}
                                         -
                                     {% endif %}
-                                </td>
+                                </td>                                                        
                                 <td>
                                     <a href="" class="btn btn-info text-light">View Details</a>
-                                </td>
+                                </td>           
                                 <td>
                                     <a href="#editAnggotaModal" class="edit btn-edit" data-toggle="modal" data-nim="{{ mahasiswa.nim }}"
-                                        data-id="{{ mahasiswa.id }}"
-                                        data-nama="{{ mahasiswa.nama }}"
-                                        data-divisi="{{ mahasiswa.divisi }}"
-                                        data-profile_picture="{% if mahasiswa.profile_picture %}{{ mahasiswa.profile_picture.url }}{% else %}''{% endif %}"
-                                        data-username="{{ mahasiswa.username }}"
-                                        data-password="{{ mahasiswa.password }}">
-                                        <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                    </a>
-                                    <a href="#deleteAnggotaModal" class="delete" data-toggle="modal" data-nim="{{ mahasiswa.nim }}">
-                                        <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
-                                    </a>
+                                            data-id="{{ mahasiswa.id }}"
+                                            data-nama="{{ mahasiswa.nama }}"
+                                            data-divisi="{{ mahasiswa.divisi }}"
+                                            data-profile_picture="{% if mahasiswa.profile_picture %}{{ mahasiswa.profile_picture.url }}{% else %}''{% endif %}"
+                                            data-username="{{ mahasiswa.username }}"
+                                            data-password="{{ mahasiswa.password }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                    <a href="#deleteAnggotaModal" class="delete" data-toggle="modal" data-nim="{{ mahasiswa.nim }}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -160,7 +152,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div>        
     </div>
 
     <!-- Section D: Modals (Add, Edit, Delete) -->
@@ -170,7 +162,7 @@
             <div class="modal-content">
                 <form method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="modal-header">
+                    <div class="modal-header">						
                         <h4 class="modal-title">Menambahkan Data Anggota Baru</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
@@ -179,7 +171,7 @@
                         <div class="form-group">
                             <label for="id_nama">Nama</label>
                             <input type="text" class="form-control" id="id_nama" name="nama" required>
-                        </div>
+                        </div>					
                         <div class="form-group">
                             <label for="id_nim">NIM</label>
                             <input type="text" class="form-control" id="id_nim" name="nim" required>
@@ -204,7 +196,7 @@
                             <label for="id_confirm_password">Konfirmasi Password</label>
                             <input type="password" class="form-control" id="id_confirm_password" name="confirm_password" required>
                         </div>
-                    </div>
+                    </div>				
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
                         <input type="submit" class="btn btn-success" value="Add">
@@ -220,63 +212,67 @@
             <div class="modal-content">
                 <form method="POST" action="{% url 'edit_member' %}" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="modal-header">
+                    <div class="modal-header">						
                         <h4 class="modal-title">Edit Data</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="id">
                         <div class="form-group">
-                            <label for="id_nama">Nama</label>
-                            <input type="text" class="form-control" id="id_nama" name="nama" required>
+                            <label>Nama</label>
+                            <input type="text" class="form-control" name="nama" value="{{ nama }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="id_nim">NIM</label>
-                            <input type="text" class="form-control" id="id_nim" name="nim" required>
+                            <label>NIM</label>
+                            <input type="text" class="form-control" name="nim" value="{{ nim }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="id_divisi">Divisi</label>
-                            <input type="text" class="form-control" id="id_divisi" name="divisi" required>
+                            <label>Divisi</label>
+                            <input type="text" class="form-control" name="divisi" value="{{ divisi }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="id_profile_picture">Profile Picture</label>
-                            <input type="file" class="form-control" id="id_profile_picture" name="profile_picture">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username" value="{{ username }}" required>
                         </div>
                         <div class="form-group">
-                            <label for="id_username">Username</label>
-                            <input type="text" class="form-control" id="id_username" name="username" required>
+                            <label>Profile Picture</label>
+                            <input type="file" class="form-control" name="profile_picture">
+                            <div class="profile-picture-preview">
+                                {% if profile_picture %}
+                                    <img src="{{ profile_picture }}" width="100" height="100">
+                                {% else %}
+                                    No profile picture
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="id_password">Password</label>
-                            <input type="password" class="form-control" id="id_password" name="password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="id_confirm_password">Confirm Password</label>
-                            <input type="password" class="form-control" id="id_confirm_password" name="confirm_password" required>
+                            <label>Password</label>
+                            <input type="text" class="form-control" name="password">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success" value="Update">
+                        <input type="submit" class="btn btn-info" value="Save">
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
+    
     <!-- Delete Data Modal -->
     <div id="deleteAnggotaModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST" action="{% url 'delete_member' %}">
                     {% csrf_token %}
-                    <div class="modal-header">
+                    <input type="hidden" name="nim" id="delete_nim">
+                    <div class="modal-header">						
                         <h4 class="modal-title">Delete Data</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this data?</p>
-                        <input type="hidden" name="nim">
+                    <div class="modal-body">					
+                        <p>Apakah Anda yakin ingin menghapus Record Data ini?</p>
+                        <p class="text-warning"><small>Tindakan ini tidak dapat dibatalkan.</small></p>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -287,49 +283,50 @@
         </div>
     </div>
 
-    <!-- Including the JS files for the modal functionality -->
-    <script>
-    // Javascript function untuk menghapus data mahasiswa
-    $(document).ready(function(){
-        // Pass NIM to delete modal
-        $('.delete').click(function(){
-            var nim = $(this).data('nim');
-            $('#delete_nim').val(nim);
-        });
-    });
-
-    // javascript function untuk mengedit data mahasiswa
-    $('#editAnggotaModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-
-        // Extract data attributes
-        var id = button.data('id');
-        var nim = button.data('nim');
-        var nama = button.data('nama');
-        var divisi = button.data('divisi');
-        var profile_picture = button.data('profile_picture');
-        var username = button.data('username');
-        var password = button.data('password');
-
-        var modal = $(this);
-
-        // Set values in modal
-        modal.find('input[name="id"]').val(id);
-        modal.find('input[name="nim"]').val(nim);
-        modal.find('input[name="nama"]').val(nama);
-        modal.find('input[name="divisi"]').val(divisi);
-        modal.find('input[name="username"]').val(username);
-
-        // Display current profile picture if available
-        if (profile_picture) {
-            modal.find('.profile-picture-preview').html('<img src="' + profile_picture + '" width="70" height="70">');
-        } else {
-            modal.find('.profile-picture-preview').html('No profile picture');
-        }
-
-        $('.modal-title').html('Edit Data <b style="color: aqua;">' + nama + '</b>');
-    });
-    </script>
-
 </body>
+
+<!-- Including the JS files for the modal functionality -->
+<script>
+// Javascript function for delete data mahasiswa
+$(document).ready(function(){
+    // Pass NIM to delete modal
+    $('.delete').click(function(){
+        var nim = $(this).data('nim');
+        $('#delete_nim').val(nim);
+    });
+});
+
+// javascript function for edit data mahasiswa
+$('#editAnggotaModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); 
+
+    // Extract data attributes
+    var id = button.data('id');
+    var nim = button.data('nim');
+    var nama = button.data('nama');
+    var divisi = button.data('divisi');
+    var profile_picture = button.data('profile_picture');
+    var username = button.data('username');
+    var password = button.data('password');
+
+    var modal = $(this);
+
+    // Set values in modal
+    modal.find('input[name="id"]').val(id);
+    modal.find('input[name="nim"]').val(nim);
+    modal.find('input[name="nama"]').val(nama);
+    modal.find('input[name="divisi"]').val(divisi);
+    modal.find('input[name="username"]').val(username);
+
+    // Display current profile picture if available
+    if (profile_picture) {
+        modal.find('.profile-picture-preview').html('<img src="' + profile_picture + '" width="70" height="70">');
+    } else {
+        modal.find('.profile-picture-preview').html('No profile picture');
+    }
+
+    $('.modal-title').html('Edit Data <b style="color: aqua;">' + nama + '</b>');
+});
+</script>
+
 </html>

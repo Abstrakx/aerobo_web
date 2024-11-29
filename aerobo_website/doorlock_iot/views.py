@@ -432,3 +432,18 @@ def peminjaman_barang_submit(request):
     else:
         form = PeminjamanForm()
     return render(request, 'dashboard_member.html', {'form': form})
+
+@mahasiswa_login_required
+def update_status_member(request, pk, new_status):
+    peminjaman = get_object_or_404(Peminjaman, pk=pk)
+
+    if new_status == 'Diterima' and peminjaman.barang.jumlah >= peminjaman.jumlah_pinjam:
+        peminjaman.status = Peminjaman.Status.DITERIMA
+    elif new_status == 'Dikembalikan':
+        peminjaman.status = Peminjaman.Status.DIKEMBALIKAN
+        peminjaman.tanggal_kembali = timezone.now()
+    else:
+        return render(request, 'error.html', {'message': 'Aksi tidak valid atau stok barang habis.'})
+
+    peminjaman.save()
+    return redirect('dashboard_member')
