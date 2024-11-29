@@ -3,11 +3,16 @@
 <html lang="en">
 
 <head>
+  <!-- Section A: Head Section -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Dashboard - {{ mahasiswa.nama }}</title>
+
+  <!-- External Stylesheets -->
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap and JavaScript Libraries -->
   {% load bootstrap5 %}
   {% bootstrap_css %}
   {% bootstrap_javascript %}
@@ -17,27 +22,40 @@
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-custom">
-    <div class="container-fluid">
-      <a class="navbar-brand">
-        {% if mahasiswa.divisi == 'RP' %}
-          <img src="{% static 'images/RP.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" style="margin-left: 10px;" />
-        {% elif mahasiswa.divisi == 'VTOL' %}
-          <img src="{% static 'images/VTOL.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" style="margin-left: 10px;" />
-        {% else %}
-          <img src="{% static 'images/TD.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" style="margin-left: 10px;" />
-        {% endif %}
-      </a>
 
-      <form method="POST" action="{% url 'logout_member' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger" style="margin-right: 10px;">Logout</button>
-      </form>
+  <!-- Section B: Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light navbar-custom pt-3">
+    <div class="container-fluid">
+        <a class="navbar-brand">
+            {% if mahasiswa.divisi == 'RP' %}
+            <img src="{% static 'images/RP.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" />
+            {% elif mahasiswa.divisi == 'VTOL' %}
+            <img src="{% static 'images/VTOL.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" />
+            {% else %}
+            <img src="{% static 'images/TD.png' %}" alt="Logo" width="200" height="40" class="d-inline-block align-text-top" />
+            {% endif %}
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item w-100"> 
+                    <form method="POST" action="{% url 'logout_member' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 mx-auto" style="border: 0.5px solid black;">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
   </nav>
 
-  <!-- Main Content -->
+  <hr class="my-0">
+
+  <!-- Section C: Main Content -->
   <div class="container-xl mt-4">
     <div class="login-wrapper loginBox">
       <div class="row">
@@ -46,7 +64,7 @@
           <hr style="width: 70%; text-align: left; margin-left: 0; margin-top: 10px;" />
         </div>
 
-        <!-- Identitas Section -->
+        <!-- Section C.1: Identitas -->
         <div class="col-md-6">
           <h3>Identitas :</h3>
           <div style="margin-top: 30px;">
@@ -57,7 +75,7 @@
           </div>
         </div>
 
-        <!-- QR Code Kantor Section -->
+        <!-- Section C.2: QR Code Kantor -->
         <div class="col-md-6 text-center">
           <h3>QR Code Kantor</h3>
           <div>
@@ -67,7 +85,7 @@
         </div>
       </div>
 
-      <!-- Informasi Masuk Base Table -->
+      <!-- Section D: Informasi Masuk Base Table -->
       <div style="margin-top: 50px;" class="table-wrapper-member">
         <div class="table-title">
           <h2>Informasi <b>Masuk Base</b></h2>
@@ -102,13 +120,15 @@
                 </tr>
               {% endfor %}
             {% else %}
-              <td colspan="12" style="text-align:center;">Tidak ada data masuk kantor</td>
+              <tr>
+                <td colspan="12" style="text-align:center;">Tidak ada data masuk kantor</td>
+              </tr>
             {% endif %}
           </tbody>
         </table>
       </div>
 
-      <!-- Informasi Peminjaman Alat -->
+      <!-- Section E: Informasi Peminjaman Alat -->
       <div style="margin-top: 10px;" class="table-wrapper-member">
         <div>
             <a href="{% url 'dashboard_barang_member' mahasiswa.nim %}" class="btn btn-danger mb-2">Informasi Barang</a>
@@ -124,6 +144,7 @@
             <tr>
               <th>Alat</th>
               <th>Status</th>
+              <th>Jumlah</th>
             </tr>
           </thead>
           <tbody>
@@ -141,18 +162,23 @@
                         {{ peminjaman.status }}
                     {% endif %}
                   </td>
+                  <td>
+                    {{ peminjaman.jumlah_pinjam }}
+                  </td>
                 </tr>
               {% endfor %}
             {% else %}
             <tr>
-              <td colspan="2" style="text-align:center;">Tidak ada data peminjaman barang</td>
-          </tr>
+              <td colspan="3" style="text-align:center;">Tidak ada data peminjaman barang</td>
+            </tr>
             {% endif %}
           </tbody>
         </table>
       </div>
 
-    <!-- Adding data Modal HTML -->
+    </div> <!-- End of Main Content -->
+
+    <!-- Section F: Modals for Peminjaman -->
     <div id="peminjamanBarang" class="modal fade">
       <div class="modal-dialog">
           <div class="modal-content">
@@ -163,7 +189,6 @@
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                   </div>
                   <div class="modal-body">
-                      <!-- Render individual fields with custom classes -->
                       <div class="form-group">
                           <label for="barang">Barang</label>
                           {{ form.barang }}
@@ -180,14 +205,14 @@
               </form>
           </div>
       </div>
-  </div>
-  
-  </div>
+    </div>
 
+  </div> 
+  <!-- End of Main Container -->
 
-  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

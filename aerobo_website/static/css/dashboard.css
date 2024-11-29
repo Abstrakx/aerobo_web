@@ -1,43 +1,49 @@
+/* Global Styles */
 body {
-	color: #566787;
-	background: #f5f5f5;
-	font-family: 'Varela Round', sans-serif;
-	font-size: 13px;
+    color: #566787;
+    background: #f5f5f5;
+    font-family: 'Varela Round', sans-serif;
+    font-size: 13px;
 }
+
+/* Navbar Styles */
 .navbar-custom {
-    background-color: #d37000; 
-    padding-top: 1px; 
-    padding-bottom: 1px;
+    background-color: #d37000;
     font-family: 'Montserrat', sans-serif;
 }
+
 .navbar-text-custom {
     padding-top: 10px;
 }
+
+/* Table Styles */
 .table-responsive {
     margin: 30px 0;
 }
+
 .table-wrapper {
-	background: #fff;
-	padding: 20px 0px;
-	border-radius: 3px;
-	min-width: 900px;
-	box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    background: #fff;
+    padding: 20px 0;
+    border-radius: 3px;
+    width: 100%;
+	overflow-x: auto;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 }
-.table-wrapper-fix {
-	padding: 0px 25px;
-}
+
 .table-wrapper-member {
-	background: #fff;
-	padding: 20px 0px;
-	border-radius: 3px;
+    background: #fff;
+    padding: 20px 0;
+    border-radius: 3px;
 }
+
+/* Table Title */
 .table-title {        
 	padding-bottom: 15px;
 	background: #435d7d;
 	color: #fff;
 	padding: 16px 30px;
 	min-width: 100%;
-	margin: 0px 0px 10px;
+	margin: -20px 0px 10px;
 	border-radius: 3px 3px 0 0;
 }
 .table-title h2 {
@@ -48,15 +54,10 @@ body {
 	float: right;
 }
 .table-title .btn {
-	color: #fff;
-	float: right;
-	font-size: 13px;
-	border: none;
-	min-width: 50px;
-	border-radius: 2px;
-	border: none;
-	outline: none !important;
-	margin-left: 10px;
+    display: inline-block;
+    width: auto;
+    padding: 5px 10px;
+    font-size: 12px;
 }
 .table-title .btn i {
 	float: left;
@@ -67,134 +68,185 @@ body {
 	float: left;
 	margin-top: 2px;
 }
+
+/* Table Mobile */
+@media (max-width: 768px) {
+    .table-title h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    .table-title .btn {
+        font-size: 10px;
+        margin: 5px 0;
+        padding: 4px;
+    }
+    .table-title .btn-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Table Rows */
 table.table tr th, table.table tr td {
-	border-color: #e9e9e9;
-	padding: 12px 15px;
-	vertical-align: middle;
+    border-color: #e9e9e9;
+    padding: 12px 15px;
+    vertical-align: middle;
 }
+
 table.table tr th:first-child {
-	width: 60px;
+    width: 60px;
 }
+
 table.table tr th:last-child {
-	width: 100px;
+    width: 100px;
 }
+
+/* Table Striping and Hover Effect */
 table.table-striped tbody tr:nth-of-type(odd) {
-	background-color: #fcfcfc;
+    background-color: #fcfcfc;
 }
+
 table.table-striped.table-hover tbody tr:hover {
-	background: #f5f5f5;
+    background: #f5f5f5;
 }
+
+/* Table Header Icons */
 table.table th i {
-	font-size: 13px;
-	margin: 0 5px;
-	cursor: pointer;
-}	
+    font-size: 13px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+/* Table Cell Actions */
 table.table td:last-child i {
-	opacity: 0.9;
-	font-size: 22px;
-	margin: 0 5px;
+    opacity: 0.9;
+    font-size: 22px;
+    margin: 0 5px;
 }
+
 table.table td a {
-	font-weight: bold;
-	color: #566787;
-	display: inline-block;
-	text-decoration: none;
-	outline: none !important;
+    font-weight: bold;
+    color: #566787;
+    text-decoration: none;
 }
+
 table.table td a:hover {
-	color: #2196F3;
+    color: #2196F3;
 }
+
 table.table td a.edit {
-	color: #FFC107;
+    color: #FFC107;
 }
+
 table.table td a.delete {
-	color: #F44336;
+    color: #F44336;
 }
+
 table.table td i {
-	font-size: 19px;
+    font-size: 19px;
 }
+
 table.table .avatar {
-	border-radius: 50%;
-	vertical-align: middle;
-	margin-right: 10px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 10px;
 }
+
+/* Pagination Styles */
 .pagination {
-	float: right;
-	margin: 0 0 5px;
+    float: right;
+    margin: 0 0 5px;
 }
+
 .pagination li a {
-	border: none;
-	font-size: 13px;
-	min-width: 30px;
-	min-height: 30px;
-	color: #999;
-	margin: 0 2px;
-	line-height: 30px;
-	border-radius: 2px !important;
-	text-align: center;
-	padding: 0 6px;
+    border: none;
+    font-size: 13px;
+    min-width: 30px;
+    min-height: 30px;
+    color: #999;
+    margin: 0 2px;
+    line-height: 30px;
+    border-radius: 2px;
+    text-align: center;
+    padding: 0 6px;
 }
+
 .pagination li a:hover {
-	color: #666;
-}	
+    color: #666;
+}
+
 .pagination li.active a, .pagination li.active a.page-link {
-	background: #03A9F4;
+    background: #03A9F4;
 }
-.pagination li.active a:hover {        
-	background: #0397d6;
+
+.pagination li.active a:hover {
+    background: #0397d6;
 }
+
 .pagination li.disabled i {
-	color: #ccc;
+    color: #ccc;
 }
+
 .pagination li i {
-	font-size: 16px;
-	padding-top: 6px
+    font-size: 16px;
+    padding-top: 6px;
 }
+
+/* Hint Text */
 .hint-text {
-	float: left;
-	margin-top: 10px;
-	font-size: 13px;
-}    
-/* Modal styles */
+    float: left;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+/* Modal Styles */
 .modal .modal-dialog {
-	max-width: 400px;
+    max-width: 400px;
 }
+
 .modal .modal-header, .modal .modal-body, .modal .modal-footer {
-	padding: 20px 30px;
+    padding: 20px 30px;
 }
+
 .modal .modal-content {
-	border-radius: 3px;
-	font-size: 14px;
+    border-radius: 3px;
+    font-size: 14px;
 }
+
 .modal .modal-footer {
-	background: #ecf0f1;
-	border-radius: 0 0 3px 3px;
+    background: #ecf0f1;
+    border-radius: 0 0 3px 3px;
 }
+
 .modal .modal-title {
-	display: inline-block;
+    display: inline-block;
 }
+
 .modal .form-control {
-	border-radius: 2px;
-	box-shadow: none;
-	border-color: #dddddd;
+    border-radius: 2px;
+    box-shadow: none;
+    border-color: #dddddd;
 }
+
 .modal textarea.form-control {
-	resize: vertical;
+    resize: vertical;
 }
+
 .modal .btn {
-	border-radius: 2px;
-	min-width: 100px;
-}	
-.modal form label {
-	font-weight: normal;
-}	
-
-.loginBox {
-	width: 100%;
-	min-height: 300px;
-	background: #fff; 
-	border-radius: 10px;
-	padding: 40px;
-	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    min-width: 100px;
 }
 
+.modal form label {
+    font-weight: normal;
+}
+
+/* Login Box Styles */
+.loginBox {
+    width: 100%;
+    min-height: 300px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}

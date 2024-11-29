@@ -10,3 +10,8 @@ class barang_serializer(serializers.ModelSerializer):
     class Meta:
         model = Barang
         fields = '__all__'
+
+class peminjaman_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Peminjaman
+        fields = '__all__'

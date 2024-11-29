@@ -1,11 +1,12 @@
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 from rest_framework.routers import DefaultRouter
-from .views import aerobo_member_viewset, barang_viewset,CustomLoginView, dashboard_anggota_list, member_login, member_logout, dashboard_member, edit_member, delete_member, dashboard_barang_list, delete_barang, edit_barang, dashboard_barang_member, peminjaman_list, update_status, peminjaman_barang_submit
+from .views import aerobo_member_viewset, barang_viewset,  peminjaman_viewset ,CustomLoginView, dashboard_anggota_list, member_login, member_logout, dashboard_member, edit_member, delete_member, dashboard_barang_list, delete_barang, edit_barang, dashboard_barang_member, peminjaman_list, update_status, peminjaman_barang_submit, delete_peminjaman
 
 router = DefaultRouter()
 router.register(r'aerobo_member', aerobo_member_viewset)
 router.register(r'barang', barang_viewset)
+router.register(r'peminjaman', peminjaman_viewset)
 
 urlpatterns = [
     path('login_admin/', CustomLoginView.as_view(), name='login'),  
@@ -24,4 +25,5 @@ urlpatterns = [
     path('peminjaman/', peminjaman_list, name='peminjaman_list'),
     path('peminjaman/<int:pk>/status/<str:new_status>/', update_status, name='update_status'),
     path('peminjaman/submit/', peminjaman_barang_submit, name='peminjaman_barang_submit'),
+    path('delete-peminjaman/', delete_peminjaman, name='delete_peminjaman'),
 ]

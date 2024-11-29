@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework import viewsets
 from functools import wraps
 from .models import aerobo_member, Barang, Peminjaman
-from .serializers import aerobo_member_serializer, barang_serializer
+from .serializers import aerobo_member_serializer, barang_serializer, peminjaman_serializer
 from .forms import aerobo_member_form, login_member_form, barang_form, PeminjamanForm
 
 class aerobo_member_viewset(viewsets.ModelViewSet):
@@ -19,6 +19,10 @@ class aerobo_member_viewset(viewsets.ModelViewSet):
 class barang_viewset(viewsets.ModelViewSet):
     queryset = Barang.objects.all()
     serializer_class = barang_serializer
+
+class peminjaman_viewset(viewsets.ModelViewSet):
+    queryset = Peminjaman.objects.all()
+    serializer_class = peminjaman_serializer
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -298,6 +302,32 @@ def update_status(request, pk, new_status):
 def peminjaman_list(request):
     peminjamans = Peminjaman.objects.all()
     return render(request, 'dashboard_admin_peminjaman.html', {'peminjamans': peminjamans})
+
+@login_required(login_url='login')
+def delete_peminjaman(request):
+    if request.method == 'POST':
+        # Get the ID from the POST data
+        id = request.POST.get('id')
+
+        # Ensure the id is valid (check if it's not None or empty)
+        if id:
+            try:
+                # Retrieve the peminjaman object based on the provided ID
+                peminjaman = Peminjaman.objects.get(id=id)
+
+                # Perform the deletion
+                peminjaman.delete()
+
+                # Add a success message
+                messages.success(request, f'Peminjaman with ID {id} has been deleted.')
+            except Peminjaman.DoesNotExist:
+                # Handle the case where the object doesn't exist
+                messages.error(request, 'Peminjaman not found.')
+        else:
+            messages.error(request, 'Invalid ID.')
+
+    # Redirect to the peminjaman list page after deletion
+    return redirect('peminjaman_list')
 
 def mahasiswa_login_required(view_func):
     @wraps(view_func)
