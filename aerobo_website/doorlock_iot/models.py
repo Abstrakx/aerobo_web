@@ -107,7 +107,7 @@ class Peminjaman(models.Model):
     
     def save(self, *args, **kwargs):
         # Reduce barang quantity on acceptance
-        if self.status == self.Status.DITERIMA and self.pk is None:  # New entry
+        if self.status == self.Status.DITERIMA:  
             if self.barang.jumlah < self.jumlah_pinjam:
                 raise ValueError("Barang tidak mencukupi!")
             self.barang.jumlah -= self.jumlah_pinjam

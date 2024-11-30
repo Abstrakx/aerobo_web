@@ -3,11 +3,17 @@ from django.core.files.storage import default_storage
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password, check_password
 from django.conf import settings
+from django.http import JsonResponse
 from django.utils import timezone
+from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets
 from functools import wraps
+from datetime import datetime
+import os
+import cv2
 from .models import aerobo_member, Barang, Peminjaman
 from .serializers import aerobo_member_serializer, barang_serializer, peminjaman_serializer
 from .forms import aerobo_member_form, login_member_form, barang_form, PeminjamanForm
@@ -293,7 +299,7 @@ def update_status(request, pk, new_status):
         peminjaman.status = Peminjaman.Status.DIKEMBALIKAN
         peminjaman.tanggal_kembali = timezone.now()
     else:
-        return render(request, 'error.html', {'message': 'Aksi tidak valid atau stok barang habis.'})
+        return redirect('peminjaman_list')
 
     peminjaman.save()
     return redirect('peminjaman_list')
@@ -434,7 +440,7 @@ def peminjaman_barang_submit(request):
     return render(request, 'dashboard_member.html', {'form': form})
 
 @mahasiswa_login_required
-def update_status_member(request, pk, new_status):
+def update_status_member(request, pk, new_status, nim):
     peminjaman = get_object_or_404(Peminjaman, pk=pk)
 
     if new_status == 'Diterima' and peminjaman.barang.jumlah >= peminjaman.jumlah_pinjam:
@@ -443,7 +449,111 @@ def update_status_member(request, pk, new_status):
         peminjaman.status = Peminjaman.Status.DIKEMBALIKAN
         peminjaman.tanggal_kembali = timezone.now()
     else:
-        return render(request, 'error.html', {'message': 'Aksi tidak valid atau stok barang habis.'})
+        return redirect('dashboard_member', nim=nim)
 
     peminjaman.save()
-    return redirect('dashboard_member')
+    return redirect('dashboard_member', nim=nim)
+
+@csrf_exempt
+def detect_qr_code(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON data
+            received_qr_code = request.POST.get('qr_code', '')
+            timestamp = request.POST.get('timestamp', '')
+            screenshot = request.FILES.get('screenshot', None)
+
+            # Extract NIM from received QR code
+            try:
+                received_nim = received_qr_code.split('-')[0]
+            except IndexError:
+                return JsonResponse({'error': 'Invalid QR code format'}, status=400)
+
+            print(f"Received NIM: {received_nim}")
+            
+            # Find matching student by NIM
+            try:
+                mahasiswa = aerobo_member.objects.filter(qr_code_aerobo__icontains=received_nim).exclude(qr_code_aerobo__isnull=True).first()
+
+                if not mahasiswa:
+                    return JsonResponse({'error': 'Student not found with provided NIM'}, status=404)
+                
+                # Get the QR code path from static files
+                qr_image_path = os.path.join(settings.MEDIA_ROOT, 'qr_code_aerobo', str(mahasiswa.qr_code_aerobo).split('/')[-1])
+                
+                # Read QR code from stored image using OpenCV
+                if os.path.exists(qr_image_path):
+                    # Read the image
+                    stored_image = cv2.imread(qr_image_path)
+                    if stored_image is None:
+                        return JsonResponse({
+                            'error': 'Failed to read stored QR image',
+                            'path': qr_image_path
+                        }, status=500)
+                    
+                    # Initialize QR code detector
+                    qr_detector = cv2.QRCodeDetector()
+                    
+                    # Detect and decode QR code
+                    stored_qr_data, bbox, _ = qr_detector.detectAndDecode(stored_image)
+                    
+                    if not stored_qr_data:
+                        return JsonResponse({
+                            'error': 'Could not detect QR code in stored image',
+                            'path': qr_image_path
+                        }, status=500)
+                    
+                    print(f"Stored QR Data: {stored_qr_data}")
+                    print(f"Received QR Data: {received_qr_code}")
+                    
+                    # Compare the QR codes
+                    if stored_qr_data != received_qr_code:
+                        return JsonResponse({
+                            'error': 'QR code mismatch',
+                            'stored': stored_qr_data,
+                            'received': received_qr_code
+                        }, status=400)
+                else:
+                    return JsonResponse({
+                        'error': 'Stored QR image not found',
+                        'path': qr_image_path
+                    }, status=404)
+
+            except Exception as e:
+                return JsonResponse({
+                    'error': f'Error validating QR code: {str(e)}',
+                    'qr_code': str(mahasiswa.qr_code_aerobo) if mahasiswa else 'No mahasiswa found'
+                }, status=400)
+
+            # Save the screenshot if provided
+            last_in_entry = {
+                "datetime": timestamp,
+                "screenshot": None,
+            }
+            if screenshot:
+                # Use FileSystemStorage for proper `upload_to` handling
+                fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'screenshots'))
+                screenshot_filename = f'{received_qr_code}.png'
+                filename = fs.save(screenshot_filename, screenshot)
+                screenshot_url = fs.url(filename)
+                last_in_entry["screenshot"] = f'http://{request.get_host()}/media/screenshots/{os.path.basename(screenshot_url)}'
+
+            # Update JSONField for last_in
+            if not mahasiswa.last_in:
+                mahasiswa.last_in = []
+            mahasiswa.last_in.append(last_in_entry)
+            mahasiswa.save()
+
+            return JsonResponse({
+                'message': 'QR code validated and data saved successfully',
+                'student': {
+                    'nim': received_nim,
+                    'name': mahasiswa.nama if hasattr(mahasiswa, 'nama') else None
+                },
+                'screenshot_url': last_in_entry["screenshot"]
+            })
+
+        except Exception as e:
+            return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
