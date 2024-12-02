@@ -195,9 +195,10 @@
                           <td>
                               {% if last_in_item.screenshot %}
                               <img
-                                src="{{ last_in_item.screenshot }}"
+                                src="{{ request.scheme }}://{{ request.get_host }}/{{ last_in_item.screenshot }}"
                                 alt="screenshot"
                                 class="img-fluid"
+                                width="300"
                               />
                               {% else %}
                                   No screenshot available

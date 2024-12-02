@@ -131,7 +131,7 @@
                                     {% endif %}
                                 </td>                                                        
                                 <td>
-                                    <a href="" class="btn btn-info text-light">View Details</a>
+                                    <a href="{% url 'aerobo_member_detail' mahasiswa.nim %}" class="btn btn-info text-light">View Details</a>
                                 </td>           
                                 <td>
                                     <a href="#editAnggotaModal" class="edit btn-edit" data-toggle="modal" data-nim="{{ mahasiswa.nim }}"

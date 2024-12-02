@@ -335,6 +335,11 @@ def delete_peminjaman(request):
     # Redirect to the peminjaman list page after deletion
     return redirect('peminjaman_list')
 
+@login_required(login_url='login')
+def aerobo_member_detail(request, nim):
+    mahasiswa = get_object_or_404(aerobo_member, nim=nim)  
+    return render(request, 'dashboard_anggota.html', {'mahasiswa': mahasiswa})
+
 def mahasiswa_login_required(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
@@ -536,7 +541,7 @@ def detect_qr_code(request):
                 screenshot_filename = f'{received_qr_code}.png'
                 filename = fs.save(screenshot_filename, screenshot)
                 screenshot_url = fs.url(filename)
-                last_in_entry["screenshot"] = f'http://{request.get_host()}/media/screenshots/{os.path.basename(screenshot_url)}'
+                last_in_entry["screenshot"] = f'media/screenshots/{os.path.basename(screenshot_url)}'
 
             # Update JSONField for last_in
             if not mahasiswa.last_in:
