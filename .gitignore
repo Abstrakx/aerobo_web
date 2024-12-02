@@ -2,9 +2,5 @@
 /aerobo_website/aerobo_website/__pycache__
 /aerobo_website/doorlock_iot/migrations
 /aerobo_website/doorlock_iot/__pycache__
-/aerobo_website/media/profile_picture/*
-/aerobo_website/media/qr_code_aerobo/*
-/aerobo_website/media/screenshot_barang/*
-/aerobo_website/media/screenshots/*
 /doorlock-iot-test/screenshot.png
 /aerobo_website/static/images/contoh.jpg
