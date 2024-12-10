@@ -11,9 +11,10 @@ from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets
 from functools import wraps
-from datetime import datetime
+from pyzbar.pyzbar import decode
+from PIL import Image
 import os
-import cv2
+
 from .models import aerobo_member, Barang, Peminjaman
 from .serializers import aerobo_member_serializer, barang_serializer, peminjaman_serializer
 from .forms import aerobo_member_form, login_member_form, barang_form, PeminjamanForm
@@ -475,42 +476,34 @@ def detect_qr_code(request):
                 return JsonResponse({'error': 'Invalid QR code format'}, status=400)
 
             print(f"Received NIM: {received_nim}")
-            
+
             # Find matching student by NIM
             try:
                 mahasiswa = aerobo_member.objects.filter(qr_code_aerobo__icontains=received_nim).exclude(qr_code_aerobo__isnull=True).first()
 
                 if not mahasiswa:
                     return JsonResponse({'error': 'Student not found with provided NIM'}, status=404)
-                
+
                 # Get the QR code path from static files
                 qr_image_path = os.path.join(settings.MEDIA_ROOT, 'qr_code_aerobo', str(mahasiswa.qr_code_aerobo).split('/')[-1])
-                
-                # Read QR code from stored image using OpenCV
+
+                # Read and decode QR code from the stored image using pyzbar
                 if os.path.exists(qr_image_path):
-                    # Read the image
-                    stored_image = cv2.imread(qr_image_path)
-                    if stored_image is None:
-                        return JsonResponse({
-                            'error': 'Failed to read stored QR image',
-                            'path': qr_image_path
-                        }, status=500)
-                    
-                    # Initialize QR code detector
-                    qr_detector = cv2.QRCodeDetector()
-                    
-                    # Detect and decode QR code
-                    stored_qr_data, bbox, _ = qr_detector.detectAndDecode(stored_image)
-                    
-                    if not stored_qr_data:
+                    stored_image = Image.open(qr_image_path)
+                    qr_data_list = decode(stored_image)
+
+                    if not qr_data_list:
                         return JsonResponse({
                             'error': 'Could not detect QR code in stored image',
                             'path': qr_image_path
                         }, status=500)
-                    
+
+                    # Extract the decoded QR code data
+                    stored_qr_data = qr_data_list[0].data.decode('utf-8')
+
                     print(f"Stored QR Data: {stored_qr_data}")
                     print(f"Received QR Data: {received_qr_code}")
-                    
+
                     # Compare the QR codes
                     if stored_qr_data != received_qr_code:
                         return JsonResponse({
